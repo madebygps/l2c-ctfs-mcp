@@ -5,10 +5,11 @@ import azure.functions as func
 
 app = func.FunctionApp(http_auth_level=func.AuthLevel.FUNCTION)
 
-# Constants for the Azure Blob Storage container, file, and blob path
 _SNIPPET_NAME_PROPERTY_NAME = "snippetname"
 _SNIPPET_PROPERTY_NAME = "snippet"
 _BLOB_PATH = "snippets/{mcptoolargs." + _SNIPPET_NAME_PROPERTY_NAME + "}.json"
+_FLAG_NAME_PROPERTY_NUMBER="flagnumber"
+_FLAG_NAME_PROPERTY="flag"
 
 
 class ToolProperty:
@@ -33,9 +34,15 @@ tool_properties_save_snippets_object = [
 
 tool_properties_get_snippets_object = [ToolProperty(_SNIPPET_NAME_PROPERTY_NAME, "string", "The name of the snippet.")]
 
+tool_properties_verify_flag_object = [
+    ToolProperty(_FLAG_NAME_PROPERTY_NUMBER, "int", "The number of the challenge"),
+    ToolProperty(_FLAG_NAME_PROPERTY, "string", "The content of the flag")
+]
+
 # Convert the tool properties to JSON
 tool_properties_save_snippets_json = json.dumps([prop.to_dict() for prop in tool_properties_save_snippets_object])
 tool_properties_get_snippets_json = json.dumps([prop.to_dict() for prop in tool_properties_get_snippets_object])
+tool_properties_get_flag_json = json.dumps([prop.to_dict() for prop in tool_properties_verify_flag_object])
 
 
 @app.generic_trigger(
