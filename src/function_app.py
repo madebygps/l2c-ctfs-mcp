@@ -45,7 +45,16 @@ class ToolProperty:
             "description": self.description,
         }
 
-
+def verify_flag_with_keyvault_value(challenge_number: int, submitted_flag: str):
+    try:
+        secret_name = f"flag-{challenge_number}"
+        client = get_secret_client()
+        stored_flag = client.get_secret(secret_name).value
+        return submitted_flag == stored_flag
+    except Exception as e:
+        logging.error(f'Error verifying flag: {str(e)}')
+        return False
+    
 # Define the tool properties using the ToolProperty class
 tool_properties_save_snippets_object = [
     ToolProperty(_SNIPPET_NAME_PROPERTY_NAME, "string", "The name of the snippet."),
@@ -154,8 +163,6 @@ def verify_flag(context) -> str:
     flag_number_from_args = content["arguments"][_FLAG_NUMBER_PROPERTY_NAME]
     flag_content_from_args = content["arguments"][_FLAG_NAME_PROPERTY]
     
-    print(f"the content: {flag_content_from_args}")
-    print(f"the number: {flag_number_from_args}")
     
     if not flag_content_from_args:
         return "No flag content provided"
@@ -163,7 +170,15 @@ def verify_flag(context) -> str:
     if not flag_number_from_args:
         return "No flag content provided"
     
-    if int(flag_number_from_args) == 1 and flag_content_from_args =="hello":
-        return "You got it"
-    else:
-        return "failed"
+    try: 
+        
+        if verify_flag_with_keyvault_value(flag_number_from_args, flag_content_from_args):
+            return "Correct!"
+        else:
+            return "No bueno, incorrect"
+    except ValueError:
+        return "Invalid challenge number format"
+    except Exception as e:
+        logging.error(f"Error verifying flag {str(e)}")
+        return "An error occured."
+    
