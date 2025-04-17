@@ -168,7 +168,7 @@ def verify_flag(context) -> str:
         return "No flag content provided"
     
     if not flag_number_from_args:
-        return "No flag content provided"
+        return "No flag number provided"
     
     try: 
         
